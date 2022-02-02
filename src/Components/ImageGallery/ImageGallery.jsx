@@ -4,6 +4,7 @@ export default class ImageGallery extends Component {
   state = {
     gallery: [],
     loading: false,
+    page: 1,
     total: 0,
     status: "idle",
     largeImageURL: "",
@@ -23,28 +24,23 @@ export default class ImageGallery extends Component {
         .then((gallery) =>
           this.setState({
             gallery: [...gallery.hits],
-            status: "resolved",
-            total: gallery.totalHits,
           })
-        )
-        .finally(() => this.setState({ loading: false }));
+        );
     }
   }
 
   render() {
     const { gallery, loading } = this.state;
     const { imagesName } = this.props;
+
+    console.log(gallery);
     return (
       <div>
         {loading && <div>Loading.....</div>}
         {!imagesName && <div>Enter a name for the picture</div>}
         <ul>
           {gallery.map((image) => (
-            <li
-              key={image.id}
-              imageurl={image.webformatURL}
-              largeimageurl={image.largeImageURL}
-            ></li>
+            <li key={image.id} largeimageurl={image.largeImageURL}></li>
           ))}
         </ul>
       </div>
