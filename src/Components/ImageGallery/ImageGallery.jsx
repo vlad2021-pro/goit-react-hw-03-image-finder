@@ -1,6 +1,5 @@
 import { Component } from "react";
 import Loader from "../Loader/Loader";
-import { PictureGallery } from "../ImageGallery/ImageGallery.styled";
 
 export default class ImageGallery extends Component {
   state = {
@@ -57,13 +56,13 @@ export default class ImageGallery extends Component {
 
     if (status === "resolved") {
       return (
-        <PictureGallery>
+        <ul className="ImageGallery">
           {gallery.map((image) => (
-            <li key={image.id} largeimageurl={image.largeImageURL}>
+            <li key={image.id} largeImageURL={image.largeImageURL}>
               <img src={image.webformatURL} alt="" />
             </li>
           ))}
-        </PictureGallery>
+        </ul>
       );
     }
   }

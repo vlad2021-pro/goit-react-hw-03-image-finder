@@ -1,15 +1,9 @@
 import { Component } from "react";
-import {
-  SearchForm,
-  SearchFormButton,
-  SearchFormInput,
-  SearchbarForm,
-  SearchFormButtonLabel,
-} from "../Searchbar/Searchbar.styled";
 
 export default class Searchbar extends Component {
   state = {
     imagesName: "",
+    imges: [],
   };
 
   handleNameChange = (event) => {
@@ -30,20 +24,21 @@ export default class Searchbar extends Component {
   render() {
     return (
       <div>
-        <SearchbarForm>
-          <SearchForm onSubmit={this.handleSubmit}>
-            <SearchFormButton type="submit">
-              <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-            </SearchFormButton>
+        <header className="Searchbar">
+          <form className="SearchForm" onSubmit={this.handleSubmit}>
+            <button className="SearchForm-button" type="submit">
+              <span className="button">Search</span>
+            </button>
 
-            <SearchFormInput
+            <input
+              className="SearchForm-input"
               type="text"
               placeholder="Search images and photos"
               value={this.state.imagesName}
               onChange={this.handleNameChange}
             />
-          </SearchForm>
-        </SearchbarForm>
+          </form>
+        </header>
       </div>
     );
   }
