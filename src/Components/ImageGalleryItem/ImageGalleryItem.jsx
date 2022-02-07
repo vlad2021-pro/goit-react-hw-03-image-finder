@@ -1,11 +1,14 @@
-// import React from 'react';
+import React from "react";
 
-//  const GalleryItem = ({ largeImageURL, webformatURL}) => {
+const ImageGalleryItem = ({ imageURL, tags, toggleModal, largeImageURL }) => (
+  <li className="ImageGalleryItem">
+    <img
+      src={imageURL}
+      alt={tags}
+      className="ImageGalleryItem-image"
+      onClick={() => toggleModal(largeImageURL)}
+    />
+  </li>
+);
 
-//  <li onClick={() => onClick=(largeImageURL)}>
-//       <img src={webformatURL} alt="" />
-//     </li>
-
-// }
-
-// export default GalleryItem
+export default ImageGalleryItem;
