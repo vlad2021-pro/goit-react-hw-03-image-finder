@@ -3,6 +3,7 @@ import Loader from "../Loader/Loader";
 import Modal from "../Modal/Modal";
 import Button from "../Button/Button";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
+import { fetchImages } from "../../Untils/api";
 
 export default class ImageGallery extends Component {
   state = {
@@ -17,51 +18,37 @@ export default class ImageGallery extends Component {
     imageURL: "",
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const prevName = prevProps.imagesName;
     const nextName = this.props.imagesName;
     const prevPage = prevState.page;
     const nextPage = this.state.page;
 
-    if (prevName !== nextName) {
-      console.log("Изменить имя");
-      this.setState({ status: "pending" });
-      fetch(
-        `https://pixabay.com/api/?q=${nextName}&page=1&key=11408941-3cf7894bd0fa3b9fec7ed7cf5&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-          return Promise.reject(
-            new Error(`${nextName} nextNameimages do not exist.`)
-          );
-        })
+    this.setState({ status: "pending" });
+    let response;
+    try {
+      if (prevName !== nextName) {
+        response = await fetchImages({ nextName, nextPage: 1 });
+      }
 
-        .then((gallery) =>
-          this.setState({
-            gallery: [...gallery.hits],
-            status: "resolved",
-            total: gallery.totalHits,
-          })
-        )
-        .catch((error) => this.setState({ error, status: "rejected" }));
-    }
-    if (prevPage !== nextPage && nextPage !== 1) {
-      this.setState({ status: "pending" });
-      fetch(
-        `https://pixabay.com/api/?q=${nextName}&page=${nextPage}&key=11408941-3cf7894bd0fa3b9fec7ed7cf5&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then((res) => res.json())
-
-        .then((newGallery) =>
-          this.setState({
-            gallery: [...prevState.gallery, ...newGallery.hits],
-            status: "resolved",
-            total: newGallery.totalHits,
-          })
-        )
-        .catch((error) => this.setState({ error, status: "rejected" }));
+      if (prevPage !== nextPage && nextPage !== 1) {
+        response = await fetchImages({ nextName, nextPage });
+      }
+      if (!response) {
+        this.setState({ status: "rejected" });
+        console.error("Cannot find conditions for fetching images");
+        return;
+      }
+      this.setState({
+        gallery: prevState.gallery
+          ? [...prevState.gallery, ...response.hits]
+          : response.hits,
+        status: "resolved",
+        total: response.totalHits,
+      });
+    } catch (e) {
+      this.setState({ status: "rejected" });
+      console.error(e);
     }
   }
 
