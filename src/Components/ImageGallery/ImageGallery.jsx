@@ -24,31 +24,29 @@ export default class ImageGallery extends Component {
     const prevPage = prevState.page;
     const nextPage = this.state.page;
 
-    this.setState({ status: "pending" });
     let response;
-    try {
-      if (prevName !== nextName) {
-        response = await fetchImages({ nextName, nextPage: 1 });
-      }
+    if (prevName !== nextName || prevPage !== nextPage) {
+      try {
+        this.setState({ status: "pending" });
 
-      if (prevPage !== nextPage && nextPage !== 1) {
         response = await fetchImages({ nextName, nextPage });
-      }
-      if (!response) {
+
+        if (!response) {
+          this.setState({ status: "rejected" });
+          console.error("Cannot find conditions for fetching images");
+          return;
+        }
+        this.setState({
+          gallery: prevState.gallery
+            ? [...prevState.gallery, ...response.hits]
+            : response.hits,
+          status: "resolved",
+          total: response.totalHits,
+        });
+      } catch (e) {
         this.setState({ status: "rejected" });
-        console.error("Cannot find conditions for fetching images");
-        return;
+        console.error(e);
       }
-      this.setState({
-        gallery: prevState.gallery
-          ? [...prevState.gallery, ...response.hits]
-          : response.hits,
-        status: "resolved",
-        total: response.totalHits,
-      });
-    } catch (e) {
-      this.setState({ status: "rejected" });
-      console.error(e);
     }
   }
 
@@ -75,7 +73,7 @@ export default class ImageGallery extends Component {
       return <Loader />;
     }
     if (status === "rejected") {
-      return <div>{error.message}</div>;
+      return <div>{error ? error.message : "Empty error"}</div>;
     }
 
     if (status === "resolved") {
